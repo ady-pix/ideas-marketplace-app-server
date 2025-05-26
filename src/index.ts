@@ -16,6 +16,7 @@ console.log('=== SERVER STARTUP DEBUG ===')
 console.log('Environment variables:')
 console.log('- PORT:', process.env.PORT || '5000 (default)')
 console.log('- MONGO_URI:', process.env.MONGO_URI ? 'Set' : '❌ NOT SET')
+console.log('- CORS_ORIGINS:', process.env.CORS_ORIGINS || 'Using defaults')
 console.log(
     '- FIREBASE_SERVICE_ACCOUNT_PATH:',
     process.env.FIREBASE_SERVICE_ACCOUNT_PATH ? 'Set' : 'Not set'
@@ -25,9 +26,21 @@ console.log(
     process.env.FIREBASE_PROJECT_ID ? 'Set' : 'Not set'
 )
 
+// Configure CORS origins
+const allowedOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((origin) => origin.trim())
+    : [
+          'http://localhost:5173', // Local development
+          'https://www.ideady.com', // Production domain
+          'https://ideady.com', // Production domain without www
+          'ideas-marketplace-app-client.vercel.app', // Vercel app
+      ]
+
+console.log('🌐 CORS allowed origins:', allowedOrigins)
+
 app.use(
     cors({
-        origin: 'http://localhost:5173', // React app URL
+        origin: allowedOrigins,
         credentials: true,
     })
 )
